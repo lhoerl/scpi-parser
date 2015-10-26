@@ -73,8 +73,7 @@ typedef struct {
     //fd_set fds;
 } user_data_t;
 
-struct _queue_event_t
-{
+struct _queue_event_t {
     uint8_t cmd;
     uint8_t param1;
     int16_t param2;

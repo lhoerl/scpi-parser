@@ -200,8 +200,7 @@ static scpi_bool_t transformNumber(scpi_t * context, const char * unit, size_t l
  * @param mandatory if the parameter is mandatory
  * @return 
  */
-scpi_bool_t SCPI_ParamNumber(scpi_t * context, const scpi_choice_def_t * special, scpi_number_t * value, scpi_bool_t mandatory)
-{
+scpi_bool_t SCPI_ParamNumber(scpi_t * context, const scpi_choice_def_t * special, scpi_number_t * value, scpi_bool_t mandatory) {
     scpi_token_t token;
     lex_state_t state;
     scpi_parameter_t param;
@@ -234,6 +233,8 @@ scpi_bool_t SCPI_ParamNumber(scpi_t * context, const scpi_choice_def_t * special
             value->special = FALSE;
             result = TRUE;
             break;
+        default:
+            break;
     }
 
     switch(param.type) {
@@ -250,6 +251,8 @@ scpi_bool_t SCPI_ParamNumber(scpi_t * context, const scpi_choice_def_t * special
             break;
         case SCPI_TOKEN_OCTNUM:
             value->base = 8;
+            break;
+        default:
             break;
     }
 
@@ -280,7 +283,7 @@ scpi_bool_t SCPI_ParamNumber(scpi_t * context, const scpi_choice_def_t * special
             scpiLex_CharacterProgramData(&state, &token);
 
             /* convert string to special number type */
-            SCPI_ParamToChoice(context, &token, special, &tag);
+            result = SCPI_ParamToChoice(context, &token, special, &tag);
 
             value->special = TRUE;
             value->tag = tag;

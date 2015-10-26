@@ -92,7 +92,7 @@ extern "C" {
     XE(SCPI_ERROR_BLOCK_DATA_ERROR,             -160, "Block data error")                             \
     XE(SCPI_ERROR_INVALID_BLOCK_DATA,           -161, "Invalid block data")                           \
     XE(SCPI_ERROR_BLOCK_DATA_NOT_ALLOWED,       -168, "Block data not allowed")                       \
-    XE(SCPI_ERROR_EXPRESSION_PARSING_ERROR,     -170, "Expression error")                             \
+    X(SCPI_ERROR_EXPRESSION_PARSING_ERROR,      -170, "Expression error")                             \
     XE(SCPI_ERROR_INVAL_EXPRESSION,             -171, "Invalid expression")                           \
     XE(SCPI_ERROR_EXPRESSION_DATA_NOT_ALLOWED,  -178, "Expression data not allowed")                  \
     XE(SCPI_ERROR_MACRO_DEFINITION_ERROR,       -180, "Macro error")                                  \
@@ -102,7 +102,7 @@ extern "C" {
     X(SCPI_ERROR_EXECUTION_ERROR,               -200, "Execution error")                              \
     XE(SCPI_ERROR_INVAL_WHILE_IN_LOCAL,         -201, "Invalid while in local")                       \
     XE(SCPI_ERROR_SETTINGS_LOST_DUE_TO_RTL,     -202, "Settings lost due to rtl")                     \
-    XE(SCPI_ERROR_COMMAND_PROTECTED,            -203, "Command protected TK024")                      \
+    XE(SCPI_ERROR_COMMAND_PROTECTED,            -203, "Command protected")                      \
     XE(SCPI_ERROR_TRIGGER_ERROR,                -210, "Trigger error")                                \
     XE(SCPI_ERROR_TRIGGER_IGNORED,              -211, "Trigger ignored")                              \
     XE(SCPI_ERROR_ARM_IGNORED,                  -212, "Arm ignored")                                  \
@@ -168,7 +168,7 @@ extern "C" {
     XE(SCPI_ERROR_COMMUNICATION_ERROR,          -360, "Communication error")                          \
     XE(SCPI_ERROR_PARITY_ERROR_IN_CMD_MSG,      -361, "Parity error in program message")              \
     XE(SCPI_ERROR_FRAMING_ERROR_IN_CMD_MSG,     -362, "Framing error in program message")             \
-    XE(SCPI_ERROR_INPUT_BUFFER_OVERRUN,         -363, "Input buffer overrun")                         \
+    X(SCPI_ERROR_INPUT_BUFFER_OVERRUN,          -363, "Input buffer overrun")                         \
     XE(SCPI_ERROR_TIME_OUT,                     -365, "Time out error")                               \
     XE(SCPI_ERROR_QUERY_ERROR,                  -400, "Query error")                                  \
     XE(SCPI_ERROR_QUERY_INTERRUPTED,            -410, "Query INTERRUPTED")                            \

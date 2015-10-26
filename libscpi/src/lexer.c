@@ -690,15 +690,15 @@ int scpiLex_StringProgramData(lex_state_t * state, scpi_token_t * token) {
     token->len = state->pos - token->ptr;
 
     if ((token->len > 0)) {
-        token->ptr++;
-        token->len -= 2;
+        //token->ptr++;
+        //token->len -= 2;
     } else {
         token->type = SCPI_TOKEN_UNKNOWN;
         state->pos = token->ptr;
         token->len = 0;
     }
 
-    return token->len > 0 ? token->len + 2 : 0;
+    return token->len > 0 ? token->len : 0;
 }
 
 /* 7.7.6 <ARBITRARY BLOCK PROGRAM DATA> */
@@ -771,12 +771,12 @@ int scpiLex_ArbitraryBlockProgramData(lex_state_t * state, scpi_token_t * token)
 /* 7.7.7 <EXPRESSION PROGRAM DATA> */
 static int isProgramExpression(int c) {
     if ((c >= 0x20) && (c <= 0x7e)) {
-        if ((c != 0x22)
-                && (c != 0x23)
-                && (c != 0x27)
-                && (c != 0x28)
-                && (c != 0x29)
-                && (c != 0x3B)) {
+        if ((c != '"')
+                && (c != '#')
+                && (c != '\'')
+                && (c != '(')
+                && (c != ')')
+                && (c != ';')) {
             return 1;
         }
     }
@@ -856,6 +856,46 @@ int scpiLex_Semicolon(lex_state_t * state, scpi_token_t * token) {
     if (skipChr(state, ';')) {
         token->len = 1;
         token->type = SCPI_TOKEN_SEMICOLON;
+    } else {
+        token->len = 0;
+        token->type = SCPI_TOKEN_UNKNOWN;
+    }
+
+    return token->len;
+}
+
+/**
+ * Detect token colon
+ * @param state
+ * @param token
+ * @return 
+ */
+int scpiLex_Colon(lex_state_t * state, scpi_token_t * token) {
+    token->ptr = state->pos;
+
+    if (skipChr(state, ':')) {
+        token->len = 1;
+        token->type = SCPI_TOKEN_COLON;
+    } else {
+        token->len = 0;
+        token->type = SCPI_TOKEN_UNKNOWN;
+    }
+
+    return token->len;
+}
+
+/**
+ * Detect specified character
+ * @param state
+ * @param token
+ * @return 
+ */
+int scpiLex_SpecificCharacter(lex_state_t * state, scpi_token_t * token, char chr) {
+    token->ptr = state->pos;
+
+    if (skipChr(state, chr)) {
+        token->len = 1;
+        token->type = SCPI_TOKEN_SPECIFIC_CHARACTER;
     } else {
         token->len = 0;
         token->type = SCPI_TOKEN_UNKNOWN;

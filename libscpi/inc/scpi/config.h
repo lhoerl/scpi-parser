@@ -54,14 +54,30 @@ extern "C" {
 #define SCPI_LINE_ENDING        LINE_ENDING_CRLF
 #endif
 
-/* Enable full error list
+/**
+ * Detect, if it has limited resources or it is running on a full blown operating system.
+ * All values can be overiden by scpi_user_config.h
+ */
+#define SYSTEM_BARE_METAL 0
+#define SYSTEM_FULL_BLOWN 1
+
+/* This should cover all windows compilers (msvc, mingw, cvi) and all Linux/OSX/BSD and other UNIX compatible systems (gcc, clang) */
+#if defined(_WIN32) || defined(_WIN64) || defined(__unix) || defined(__unix__) || defined(__APPLE__)
+#define SYSTEM_TYPE SYSTEM_FULL_BLOWN
+#else
+#define SYSTEM_TYPE SYSTEM_BARE_METAL
+#endif
+
+/**
+ * Enable full error list
  * 0 = Minimal set of errors
  * 1 = Full set of errors
  *
  * For small systems, full set of errors will occupy large ammount of data
+ * It is enabled by default on full blown systems and disabled on limited bare metal systems
  */
 #ifndef USE_FULL_ERROR_LIST
-#define USE_FULL_ERROR_LIST 0
+#define USE_FULL_ERROR_LIST SYSTEM_TYPE
 #endif
 
 /**
@@ -71,6 +87,14 @@ extern "C" {
  */
 #ifndef USE_USER_ERROR_LIST
 #define USE_USER_ERROR_LIST 0
+#endif
+
+#ifndef USE_COMMAND_TAGS
+#define USE_COMMAND_TAGS 1
+#endif
+
+#ifndef USE_DEPRECATED_FUNCTIONS
+#define USE_DEPRECATED_FUNCTIONS 1
 #endif
 
 /* Compiler specific */
@@ -147,6 +171,12 @@ extern "C" {
 #define SCPIDEFINE_strncasecmp(s1, s2, l) strnicmp((s1), (s2), (l))
 #else
 #define SCPIDEFINE_strncasecmp(s1, s2, l) OUR_strncasecmp((s1), (s2), (l))
+#endif
+
+#if HAVE_DTOSTRE
+#define SCPIDEFINE_floatToStr(v, s, l) strlen(dtostre((double)(v), (s), 6, DTOSTR_PLUS_SIGN | DTOSTR_ALWAYS_SIGN | DTOSTR_UPPERCASE))
+#else
+#define SCPIDEFINE_floatToStr(v, s, l) snprintf((s), (l), "%g", (v))
 #endif
 
 #if HAVE_DTOSTRE

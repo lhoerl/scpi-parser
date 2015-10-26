@@ -70,16 +70,13 @@ unsigned int SCPI_outputBuffer_idx = 0;
 /* helper function to remove <LF> and <CR> from the end of a string */
 /* this is needed only here for the GUI, there is a 'insert line to a text box' function */
 /* that automatically adds a new line, so this prohibits double line feeds for the GUI */
-void removeTrailingEndcodes(char *buf)
-{
+void removeTrailingEndcodes(char *buf) {
    int len;
    len = strlen(buf);
    
-   while(len > 0)
-   {
+    while (len > 0) {
       len--;
-      switch(buf[len])
-      {
+        switch (buf[len]) {
          case '\n'   :
          case '\r'   :
                         buf[len] = '\0';
@@ -93,33 +90,27 @@ void removeTrailingEndcodes(char *buf)
 
 /* wrapper for debugging output, collects debug output until a <LF> */
 /* is received, then removes the <LF> and outputs the line on the GUI */
-void debug_output(char *buf)
-{
+void debug_output(char *buf) {
    static char pbuf[512];
    static int pos = 0;
    int len;
    
    len = strlen(buf);
-   if(buf[len-1] == '\n')
-   {
+    if (buf[len - 1] == '\n') {
       buf[len-1] == '\0';
       len--;
       memcpy(&pbuf[pos], buf, len);
       pos = 0;
       InsertTextBoxLine (panelHandle, PANEL_OUTPUTDEBUG, -1, pbuf);
-   }
-   else
-   {
+    } else {
       memcpy(&pbuf[pos], buf, len);
       pos += len;
    }
    
 }
 
-size_t SCPI_Write(scpi_t * context, const char * data, size_t len)
-{
-   if((SCPI_outputBuffer_idx + len) > (SCPI_OUPUT_BUFFER_SIZE-1))
-   {
+size_t SCPI_Write(scpi_t * context, const char * data, size_t len) {
+    if ((SCPI_outputBuffer_idx + len) > (SCPI_OUPUT_BUFFER_SIZE - 1)) {
       len = (SCPI_OUPUT_BUFFER_SIZE-1) - SCPI_outputBuffer_idx;    // limit length to left over space
       // apparently there is no mechanism to cope with buffers that are too small
    }
@@ -131,8 +122,7 @@ size_t SCPI_Write(scpi_t * context, const char * data, size_t len)
    return len;
 }
 
-scpi_result_t SCPI_Flush(scpi_t * context)
-{    
+scpi_result_t SCPI_Flush(scpi_t * context) {
 // fwrite(SCPI_outputBuffer, 1, SCPI_outputBuffer_idx, stdout);
    removeTrailingEndcodes(SCPI_outputBuffer);
    InsertTextBoxLine (panelHandle, PANEL_OUTPUT, -1, SCPI_outputBuffer);
@@ -140,8 +130,7 @@ scpi_result_t SCPI_Flush(scpi_t * context)
    return SCPI_RES_OK;
 }
 
-int SCPI_Error(scpi_t * context, int_fast16_t err)
-{
+int SCPI_Error(scpi_t * context, int_fast16_t err) {
    char buf[512];
    
 //  fprintf(stderr, "**ERROR: %d, \"%s\"\r\n", (int16_t) err, SCPI_ErrorTranslate(err));
@@ -176,8 +165,7 @@ scpi_result_t SCPI_SystemCommTcpipControlQ(scpi_t * context) {
 /*
  * 
  */
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
    int result;
 
    SCPI_Init(&scpi_context);
@@ -196,17 +184,14 @@ int main(int argc, char** argv)
    return (EXIT_SUCCESS);
 }
 
-
-void updateSSCPIRegister(void)
-{
+void updateSSCPIRegister(void) {
    updateSTB();
    updateSRE();
    updateESR();
    updateESE();
 }
 
-void updateSTB(void)
-{
+void updateSTB(void) {
    scpi_reg_val_t regVal;
    
    regVal = SCPI_RegGet(&scpi_context, SCPI_REG_STB);
@@ -214,8 +199,7 @@ void updateSTB(void)
    gui_updateSTB((uint8_t)(0x00FF & regVal));
 }
 
-void updateESR(void)
-{
+void updateESR(void) {
    scpi_reg_val_t regVal;
    
    regVal = SCPI_RegGet(&scpi_context, SCPI_REG_ESR);
@@ -223,8 +207,7 @@ void updateESR(void)
    gui_updateESR((uint8_t)(0x00FF & regVal));
 }
 
-void updateESE(void)
-{
+void updateESE(void) {
    scpi_reg_val_t regVal;
    
    regVal = SCPI_RegGet(&scpi_context, SCPI_REG_ESE);
@@ -232,8 +215,7 @@ void updateESE(void)
    gui_updateESE((uint8_t)(0x00FF & regVal));
 }
 
-void updateSRE(void)
-{
+void updateSRE(void) {
    scpi_reg_val_t regVal;
    
    regVal = SCPI_RegGet(&scpi_context, SCPI_REG_SRE);
@@ -247,13 +229,11 @@ void updateSRE(void)
  *  user clicks on buttons, inputs data on the GUI etc. 
  */
 int CVICALLBACK cb_scpi_input (int panel, int control, int event,
-      void *callbackData, int eventData1, int eventData2)
-{
+        void *callbackData, int eventData1, int eventData2) {
    char buf[256];
    int len;
    
-   switch (event)
-   {
+    switch (event) {
       case EVENT_COMMIT:
          GetCtrlVal(panel, control, buf);
          /* we have to add a endcode to make SCPI accept the string, here a <LF> is added */
@@ -269,10 +249,8 @@ int CVICALLBACK cb_scpi_input (int panel, int control, int event,
 }
 
 int CVICALLBACK cb_quit (int panel, int control, int event,
-      void *callbackData, int eventData1, int eventData2)
-{
-   switch (event)
-   {
+        void *callbackData, int eventData1, int eventData2) {
+    switch (event) {
       case EVENT_COMMIT:
          QuitUserInterface (0);
          break;
@@ -283,8 +261,7 @@ int CVICALLBACK cb_quit (int panel, int control, int event,
 /*
  * Helper functions for GUI
  */
-void gui_updateSTB(uint8_t newSTB)
-{
+void gui_updateSTB(uint8_t newSTB) {
    char buf[5];
    
    sprintf(buf, "0x%02X", newSTB);
@@ -303,8 +280,7 @@ void gui_updateSTB(uint8_t newSTB)
 
 }
 
-void gui_updateESR(uint8_t newESR)
-{
+void gui_updateESR(uint8_t newESR) {
    char buf[5];
    
    sprintf(buf, "0x%02X", newESR);
@@ -320,8 +296,7 @@ void gui_updateESR(uint8_t newESR)
    SetCtrlVal(panelHandle, PANEL_ESR7, (newESR & 0x80));
 }
 
-void gui_updateESE(uint8_t newESE)
-{
+void gui_updateESE(uint8_t newESE) {
    char buf[5];
    
    sprintf(buf, "0x%02X", newESE);
@@ -337,8 +312,7 @@ void gui_updateESE(uint8_t newESE)
    SetCtrlVal(panelHandle, PANEL_ESE7, (newESE & 0x80));
 }
 
-void gui_updateSRE(uint8_t newSRE)
-{
+void gui_updateSRE(uint8_t newSRE) {
    char buf[5];
    
    sprintf(buf, "0x%02X", newSRE);

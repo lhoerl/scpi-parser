@@ -151,7 +151,7 @@ scpi_result_t TEST_ChoiceQ(scpi_t * context) {
     SCPI_ChoiceToName(trigger_source, param, &name);
     fprintf(stderr, "\tP1=%s (%ld)\r\n", name, (long int)param);
 
-    SCPI_ResultInt(context, param);
+    SCPI_ResultInt32(context, param);
 
     return SCPI_RES_OK;
 }
@@ -167,8 +167,9 @@ scpi_result_t TEST_Text(scpi_t * context) {
     char buffer[100];
     size_t copy_len;
 
-    buffer[0] = 0;
-    SCPI_ParamCopyText(context, buffer, 100, &copy_len, false);
+    if (!SCPI_ParamCopyText(context, buffer, sizeof (buffer), &copy_len, false)) {
+        buffer[0] = '\0';
+    }
 
     fprintf(stderr, "TEXT: ***%s***\r\n", buffer);
 
@@ -196,7 +197,7 @@ scpi_result_t TEST_ArbQ(scpi_t * context) {
  */
 scpi_result_t My_CoreTstQ(scpi_t * context) {
 
-    SCPI_ResultInt(context, 0);
+    SCPI_ResultInt32(context, 0);
 
     return SCPI_RES_OK;
 }
@@ -276,8 +277,12 @@ static scpi_reg_val_t scpi_regs[SCPI_REG_COUNT];
 
 scpi_t scpi_context = {
     /* cmdlist */ scpi_commands,
-    /* buffer */ { /* length */ SCPI_INPUT_BUFFER_LENGTH, /* position */ 0, /* data */ scpi_input_buffer},
-    /* param_list */ { /* cmd */ NULL, /* lex_state */ {NULL, NULL, 0}, /* cmd_raw */ {0, 0, NULL}},
+    /* buffer */
+    { /* length */ SCPI_INPUT_BUFFER_LENGTH, /* position */ 0, /* data */ scpi_input_buffer},
+    /* param_list */
+    { /* cmd */ NULL, /* lex_state */
+        {NULL, NULL, 0}, /* cmd_raw */
+        {0, 0, NULL}},
     /* interface */ &scpi_interface,
     /* output_count */ 0,
     /* input_count */ 0,
@@ -286,7 +291,12 @@ scpi_t scpi_context = {
     /* registers */ scpi_regs,
     /* units */ scpi_units_def,
     /* user_context */ NULL,
-    /* parser_state */ { /* programHeader */ {SCPI_TOKEN_UNKNOWN, NULL, 0}, /* programData */ {SCPI_TOKEN_UNKNOWN, NULL, 0}, /* numberOfParameters */ 0, /* termination */ SCPI_MESSAGE_TERMINATION_NONE},
-    /* idn */ {"MANUFACTURE", "INSTR2013", NULL, "01-02"},
+    /* parser_state */
+    { /* programHeader */
+        {SCPI_TOKEN_UNKNOWN, NULL, 0}, /* programData */
+        {SCPI_TOKEN_UNKNOWN, NULL, 0}, /* numberOfParameters */ 0, /* termination */ SCPI_MESSAGE_TERMINATION_NONE
+    },
+    /* idn */
+    {"MANUFACTURE", "INSTR2013", NULL, "01-02"},
 };
 

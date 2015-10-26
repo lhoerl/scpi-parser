@@ -101,7 +101,6 @@ static void TEST_TOKEN(const char * str, lexfn_t fn, int offset, int len, scpi_t
     if (len != token.len) printToken(&token);   \
 } while(0)
 
-
 static void testWhiteSpace(void) {
     TEST_TOKEN("  \t MEAS", scpiLex_WhiteSpace, 0, 4, SCPI_TOKEN_WS);
     TEST_TOKEN("MEAS", scpiLex_WhiteSpace, 0, 0, SCPI_TOKEN_UNKNOWN);
@@ -164,13 +163,15 @@ static void testExpression(void) {
 }
 
 static void testString(void) {
-    TEST_TOKEN("\"ahoj\"", scpiLex_StringProgramData, 1, 4, SCPI_TOKEN_DOUBLE_QUOTE_PROGRAM_DATA);
-    TEST_TOKEN("\"ahoj\" ", scpiLex_StringProgramData, 1, 4, SCPI_TOKEN_DOUBLE_QUOTE_PROGRAM_DATA);
-    TEST_TOKEN("'ahoj' ", scpiLex_StringProgramData, 1, 4, SCPI_TOKEN_SINGLE_QUOTE_PROGRAM_DATA);
+    TEST_TOKEN("\"ahoj\"", scpiLex_StringProgramData, 0, 6, SCPI_TOKEN_DOUBLE_QUOTE_PROGRAM_DATA);
+    TEST_TOKEN("\"ahoj\" ", scpiLex_StringProgramData, 0, 6, SCPI_TOKEN_DOUBLE_QUOTE_PROGRAM_DATA);
+    TEST_TOKEN("'ahoj' ", scpiLex_StringProgramData, 0, 6, SCPI_TOKEN_SINGLE_QUOTE_PROGRAM_DATA);
     TEST_TOKEN("'ahoj ", scpiLex_StringProgramData, 0, 0, SCPI_TOKEN_UNKNOWN);
-    TEST_TOKEN("'ah''oj' ", scpiLex_StringProgramData, 1, 6, SCPI_TOKEN_SINGLE_QUOTE_PROGRAM_DATA);
-    TEST_TOKEN("'ah\"oj' ", scpiLex_StringProgramData, 1, 5, SCPI_TOKEN_SINGLE_QUOTE_PROGRAM_DATA);
-    TEST_TOKEN("\"ah\"\"oj\" ", scpiLex_StringProgramData, 1, 6, SCPI_TOKEN_DOUBLE_QUOTE_PROGRAM_DATA);
+    TEST_TOKEN("'ah''oj' ", scpiLex_StringProgramData, 0, 8, SCPI_TOKEN_SINGLE_QUOTE_PROGRAM_DATA);
+    TEST_TOKEN("'ah\"oj' ", scpiLex_StringProgramData, 0, 7, SCPI_TOKEN_SINGLE_QUOTE_PROGRAM_DATA);
+    TEST_TOKEN("\"ah\"\"oj\" ", scpiLex_StringProgramData, 0, 8, SCPI_TOKEN_DOUBLE_QUOTE_PROGRAM_DATA);
+    TEST_TOKEN("\"\"", scpiLex_StringProgramData, 0, 2, SCPI_TOKEN_DOUBLE_QUOTE_PROGRAM_DATA);
+    TEST_TOKEN("''", scpiLex_StringProgramData, 0, 2, SCPI_TOKEN_SINGLE_QUOTE_PROGRAM_DATA);
 }
 
 static void testProgramData(void) {
@@ -197,15 +198,16 @@ static void testProgramData(void) {
     TEST_TOKEN("( 1 + 2 ) , ", scpiParser_parseProgramData, 0, 9, SCPI_TOKEN_PROGRAM_EXPRESSION);
     TEST_TOKEN("( 1 + 2  , ", scpiParser_parseProgramData, 0, 0, SCPI_TOKEN_UNKNOWN);
 
-    TEST_TOKEN("\"ahoj\" ", scpiParser_parseProgramData, 1, 4, SCPI_TOKEN_DOUBLE_QUOTE_PROGRAM_DATA);
-    TEST_TOKEN("'ahoj' ", scpiParser_parseProgramData, 1, 4, SCPI_TOKEN_SINGLE_QUOTE_PROGRAM_DATA);
+    TEST_TOKEN("\"ahoj\" ", scpiParser_parseProgramData, 0, 6, SCPI_TOKEN_DOUBLE_QUOTE_PROGRAM_DATA);
+    TEST_TOKEN("'ahoj' ", scpiParser_parseProgramData, 0, 6, SCPI_TOKEN_SINGLE_QUOTE_PROGRAM_DATA);
     TEST_TOKEN("'ahoj ", scpiParser_parseProgramData, 0, 0, SCPI_TOKEN_UNKNOWN);
-    TEST_TOKEN("'ah''oj' ", scpiParser_parseProgramData, 1, 6, SCPI_TOKEN_SINGLE_QUOTE_PROGRAM_DATA);
-    TEST_TOKEN("'ah\"oj' ", scpiParser_parseProgramData, 1, 5, SCPI_TOKEN_SINGLE_QUOTE_PROGRAM_DATA);
-    TEST_TOKEN("\"ah\"\"oj\" ", scpiParser_parseProgramData, 1, 6, SCPI_TOKEN_DOUBLE_QUOTE_PROGRAM_DATA);
-    
+    TEST_TOKEN("'ah''oj' ", scpiParser_parseProgramData, 0, 8, SCPI_TOKEN_SINGLE_QUOTE_PROGRAM_DATA);
+    TEST_TOKEN("'ah\"oj' ", scpiParser_parseProgramData, 0, 7, SCPI_TOKEN_SINGLE_QUOTE_PROGRAM_DATA);
+    TEST_TOKEN("\"ah\"\"oj\" ", scpiParser_parseProgramData, 0, 8, SCPI_TOKEN_DOUBLE_QUOTE_PROGRAM_DATA);
+    TEST_TOKEN("\"\"", scpiParser_parseProgramData, 0, 2, SCPI_TOKEN_DOUBLE_QUOTE_PROGRAM_DATA);
+
     TEST_TOKEN("abc_213as564 , ", scpiLex_CharacterProgramData, 0, 12, SCPI_TOKEN_PROGRAM_MNEMONIC);
-    
+
     TEST_TOKEN("1.5E12 V", scpiParser_parseProgramData, 0, 8, SCPI_TOKEN_DECIMAL_NUMERIC_PROGRAM_DATA_WITH_SUFFIX);
 }
 
@@ -231,7 +233,6 @@ static void testProgramData(void) {
     else                                        \
     if (len != token.len) printToken(&token);   \
 } while(0)
-
 
 static void testAllProgramData(void) {
     TEST_ALL_TOKEN("1.5E12 V", scpiParser_parseAllProgramData, 0, 8, SCPI_TOKEN_ALL_PROGRAM_DATA, 1);
@@ -274,6 +275,7 @@ static void testBoolParameter(void) {
 }
 
 int main() {
+    unsigned int result;
     CU_pSuite pSuite = NULL;
 
     /* Initialize the CUnit test registry */
@@ -309,7 +311,8 @@ int main() {
     /* Run all tests using the CUnit Basic interface */
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
+    result = CU_get_number_of_tests_failed();
     CU_cleanup_registry();
-    return CU_get_error();
+    return result ? result : CU_get_error();
 }
 

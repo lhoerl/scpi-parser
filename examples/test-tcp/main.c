@@ -100,16 +100,14 @@ static int createServer(int port) {
     
     /* Create socket */
     fd = socket(AF_INET,SOCK_STREAM, 0);
-    if (fd < 0)
-    {
+    if (fd < 0) {
         perror("socket() failed");
         exit(-1);
     }    
     
     /* Set address reuse enable */
     rc = setsockopt(fd, SOL_SOCKET,  SO_REUSEADDR, (char *)&on, sizeof(on));
-    if (rc < 0)
-    {
+    if (rc < 0) {
         perror("setsockopt() failed");
         close(fd);
         exit(-1);
@@ -117,8 +115,7 @@ static int createServer(int port) {
    
     /* Set non blocking */
     rc = ioctl(fd, FIONBIO, (char *)&on);
-    if (rc < 0)
-    {
+    if (rc < 0) {
         perror("ioctl() failed");
         close(fd);
         exit(-1);
@@ -126,8 +123,7 @@ static int createServer(int port) {
     
     /* Bind to socket */
     rc = bind(fd, (struct sockaddr *)&servaddr, sizeof(servaddr));
-    if (rc < 0)
-    {
+    if (rc < 0) {
         perror("bind() failed");
         close(fd);
         exit(-1);
@@ -135,8 +131,7 @@ static int createServer(int port) {
     
     /* Listen on socket */
     listen(fd, 1);
-    if (rc < 0)
-    {
+    if (rc < 0) {
         perror("listen() failed");
         close(fd);
         exit(-1);

@@ -141,6 +141,8 @@ extern "C" {
     enum _scpi_token_type_t {
         SCPI_TOKEN_COMMA,
         SCPI_TOKEN_SEMICOLON,
+        SCPI_TOKEN_COLON,
+        SCPI_TOKEN_SPECIFIC_CHARACTER,
         SCPI_TOKEN_QUESTION,
         SCPI_TOKEN_NL,
         SCPI_TOKEN_HEXNUM,
@@ -273,7 +275,9 @@ extern "C" {
     struct _scpi_command_t {
         const char * pattern;
         scpi_command_callback_t callback;
+#if USE_COMMAND_TAGS
         int32_t tag;
+#endif /* USE_COMMAND_TAGS */
     };
 
     struct _scpi_interface_t {

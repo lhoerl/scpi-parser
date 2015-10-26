@@ -43,8 +43,15 @@
 extern "C" {
 #endif
 
-    size_t SCPI_LongToStr(int32_t val, char * str, size_t len, int8_t base);
+    size_t SCPI_UInt32ToStrBase(uint32_t val, char * str, size_t len, int8_t base);
+    size_t SCPI_Int32ToStr(int32_t val, char * str, size_t len);
+    size_t SCPI_UInt64ToStrBase(uint64_t val, char * str, size_t len, int8_t base);
+    size_t SCPI_Int64ToStr(int64_t val, char * str, size_t len);
+    size_t SCPI_FloatToStr(float val, char * str, size_t len);
     size_t SCPI_DoubleToStr(double val, char * str, size_t len);
+
+    // deprecated finction, should be removed later
+#define SCPI_LongToStr(val, str, len, base) SCPI_Int32ToStr((val), (str), (len), (base), TRUE)
 
 #ifdef	__cplusplus
 }
